@@ -11,6 +11,8 @@ import utils.FileHandler;
 import utils.InputValidator;
 import services.AlertService;
 
+import services.VisitorService;
+
 public class SecureGateMain {
 
     public static void main(String[] args) {
@@ -27,10 +29,11 @@ public class SecureGateMain {
         ZoneArray zoneArray = new ZoneArray(20);
         zoneArray.loadZones(zoneList);
 
-        AuthenticationService authService =
-                new AuthenticationService(zoneArray);
+        AuthenticationService authService = new AuthenticationService(zoneArray);
 
         LogService logService = new LogService();
+
+        VisitorService visitorService = new VisitorService();
 
         while (true) {
 
@@ -39,7 +42,10 @@ public class SecureGateMain {
             System.out.println("3. Show Log Count");
             System.out.println("4. Show Alerts");
             System.out.println("5. Handle Next Alert");
-            System.out.println("6. Exit");
+            System.out.println("6. Register Visitor");
+            System.out.println("7. Process Next Visitor");
+            System.out.println("8. Show Visitor Queue");
+            System.out.println("9. Exit");
 
             System.out.print("Choose option: ");
             int choice = sc.nextInt();
@@ -72,9 +78,8 @@ public class SecureGateMain {
 
                     if (!granted) {
                         alertService.generateAlert(
-                            "Unauthorized access attempt by card: " + cardId + " to zone " + zoneId,
-                            5
-                        );
+                                "Unauthorized access attempt by card: " + cardId + " to zone " + zoneId,
+                                5);
                     }
 
                     System.out.println(granted ? "Access Granted" : "Access Denied");
@@ -97,6 +102,25 @@ public class SecureGateMain {
                     break;
 
                 case 6:
+
+                    System.out.print("Visitor Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Purpose: ");
+                    String purpose = sc.nextLine();
+
+                    visitorService.registerVisitor(name, purpose);
+                    break;
+
+                case 7:
+                    visitorService.processNextVisitor();
+                    break;
+
+                case 8:
+                    visitorService.displayVisitors();
+                    break;
+
+                case 9:
                     System.out.println("System shutting down...");
                     sc.close();
                     return;
